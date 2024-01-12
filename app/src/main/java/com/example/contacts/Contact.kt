@@ -1,6 +1,5 @@
 package com.example.contacts
 
-import android.net.Uri
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 
@@ -9,6 +8,10 @@ data class Contact(
     val id: Long,
     val name: String,
     val phoneNumbers: List<String>,
-    val photoUri: Uri?
-) : Parcelable
+    var isSelected: Boolean = false
+) : Parcelable {
+    fun changeChecked() {
+        isSelected = !isSelected
+    }
+}
 

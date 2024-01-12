@@ -43,22 +43,21 @@ class MainActivity : AppCompatActivity() {
             ContactsContract.Contacts.HAS_PHONE_NUMBER,
             ContactsContract.Contacts._ID
         )
-        val selection = null
         val sortOrder = ContactsContract.Contacts.SORT_KEY_PRIMARY + " ASC"
 
         val cursor = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI,
             projection,
-            selection,
+            null,
             null,
             sortOrder
         )
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                val contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY))
-                val hasPhoneNumber = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)) == 1
-                val contactId = cursor.getLong(cursor.getColumnIndex(ContactsContract.Contacts._ID))
+                val contactName = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY))
+                val hasPhoneNumber = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)) == 1
+                val contactId = cursor.getLong(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
 
                 if (hasPhoneNumber) {
                     contactList.add(getContactPhones(contactId, contactName))
@@ -84,15 +83,13 @@ class MainActivity : AppCompatActivity() {
         val phoneNumbers = mutableListOf<String>()
         if (phoneCursor != null) {
             while (phoneCursor.moveToNext()) {
-                phoneNumbers.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)))
+                phoneNumbers.add(phoneCursor.getString(phoneCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)))
             }
             phoneCursor.close()
         }
-
-        val photoUri = ContactsContract.Contacts.getLookupUri(contactId, "")
-
-        return Contact(contactId, contactName, phoneNumbers, photoUri)
+        return Contact(contactId, contactName, phoneNumbers)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

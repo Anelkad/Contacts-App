@@ -1,5 +1,6 @@
 package com.example.contacts
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,16 +9,32 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.contacts.databinding.ItemContactBinding
 
 class ContactsAdapter(
-    private val onDeleteListener: ((Long) -> Unit) = {},
-    private val onAddListener: ((Long) -> Unit) = {},
+    private val onDeleteListener: ((Contact) -> Unit) = {},
+    private val onAddListener: ((Contact) -> Unit) = {},
 ) : ListAdapter<Contact, ContactsAdapter.HolderMovie>(DiffCallback()) {
 
-    class HolderMovie(binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class HolderMovie(binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root) {
         val name = binding.tvName
-        val rvPhones = binding.rvPhones
         val image = binding.ivAvatar
         val btnDelete = binding.cvDelete
         val btnAdd = binding.cvAdd
+        val phoneAdapter = PhoneAdapter()
+
+        init {
+            binding.apply {
+                rvPhones.adapter = phoneAdapter
+                btnAdd.setOnClickListener {
+                    onAddListener.invoke(getItem(absoluteAdapterPosition))
+                    currentList[absoluteAdapterPosition].changeChecked()
+                    notifyItemChanged(absoluteAdapterPosition)
+                }
+                btnDelete.setOnClickListener {
+                    onDeleteListener.invoke(getItem(absoluteAdapterPosition))
+                    currentList[absoluteAdapterPosition].changeChecked()
+                    notifyItemChanged(absoluteAdapterPosition)
+                }
+            }
+        }
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Contact>() {
@@ -38,9 +55,15 @@ class ContactsAdapter(
 
         holder.apply {
             name.text = contact.name
-            image.setImageURI(contact.photoUri)
-            btnAdd.setOnClickListener { onAddListener.invoke(contact.id) }
-            btnDelete.setOnClickListener { onDeleteListener.invoke(contact.id) }
+            image.setImageURI(Uri.parse("content://com.android.contacts/contacts/${contact.id}/photo"))
+            phoneAdapter.submitList(contact.phoneNumbers)
+            if (contact.isSelected){
+                btnDelete.show()
+                btnAdd.hide()
+            } else {
+                btnDelete.hide()
+                btnAdd.show()
+            }
         }
     }
 }

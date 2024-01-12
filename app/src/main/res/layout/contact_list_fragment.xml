@@ -32,8 +32,8 @@
             android:fontFamily="@font/montserrat"
             android:text="@string/add_controller"
             android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textFontWeight="700"
+            android:textSize="16sp" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_close"
