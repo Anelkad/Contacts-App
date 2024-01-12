@@ -39,7 +39,10 @@ class ContactListFragment : BottomSheetDialogFragment() {
     }
 
     private fun bindViews() {
+        val contactList = arguments?.getParcelableArrayList<Contact>(CONTACTS_LIST)?.toList()
+
         contactsAdapter = ContactsAdapter(
+            contactList = contactList?: emptyList(),
             onAddListener = ::addContact,
             onDeleteListener = ::deleteContact
         )
@@ -47,9 +50,16 @@ class ContactListFragment : BottomSheetDialogFragment() {
             rvContacts.adapter = contactsAdapter
             rvContacts.itemAnimator = null
             btnClose.setOnClickListener { dismiss() }
+            searchInput.addSearchListener(
+                object : SearchListener {
+                    override fun searchQuery(query: String?) {
+                        contactsAdapter?.filter?.filter(query)
+                    }
+                }
+            )
         }
         contactsAdapter?.submitList(
-            arguments?.getParcelableArrayList<Contact>(CONTACTS_LIST)?.toMutableList()
+            contactList?.toMutableList()
         )
     }
 

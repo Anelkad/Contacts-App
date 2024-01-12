@@ -29,17 +29,6 @@ class SearchInput @JvmOverloads constructor(
     fun addSearchListener(listener: SearchListener) {
         searchListener = listener
     }
-
-    fun getText(): String {
-        return if (binding.etSearch.text.isNullOrEmpty())
-            ""
-        else
-            binding.etSearch.text.toString()
-    }
-
-    fun setText(text: String) {
-        binding.etSearch.setText(text)
-    }
 }
 
 interface SearchListener {
