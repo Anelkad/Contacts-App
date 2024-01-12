@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.contacts.adapters.ContactsAdapter
 import com.example.contacts.databinding.ContactListFragmentBinding
 import com.example.contacts.model.Contact
@@ -51,9 +53,16 @@ class ContactListFragment : BottomSheetDialogFragment() {
             onDeleteListener = ::deleteContact
         )
 
+        val dividerItemDecoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL).apply {
+            getDrawable(requireContext(),R.drawable.divider)?.let { setDrawable(it) }
+        }
+
         binding?.apply {
-            rvContacts.adapter = contactsAdapter
-            rvContacts.itemAnimator = null
+            rvContacts.apply {
+                itemAnimator = null
+                adapter = contactsAdapter
+                addItemDecoration(dividerItemDecoration)
+            }
             btnClose.setOnClickListener { dismiss() }
             searchInput.addSearchListener(
                 object : SearchListener {
