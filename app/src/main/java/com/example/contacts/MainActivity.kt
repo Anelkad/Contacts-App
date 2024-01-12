@@ -22,8 +22,10 @@ class MainActivity : AppCompatActivity() {
     private val requestContactPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted)
+        if (isGranted) {
             contactList = getContacts()
+            showContactsFragment()
+        }
     }
     private fun requestContactPermissions() {
         if (ContextCompat.checkSelfPermission(
@@ -36,6 +38,7 @@ class MainActivity : AppCompatActivity() {
             )
         } else {
             contactList = getContacts()
+            showContactsFragment()
         }
     }
 
@@ -111,7 +114,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         requestContactPermissions()
-        showContactsFragment()
 
         binding?.btnContacts?.setOnClickListener { showContactsFragment() }
     }
