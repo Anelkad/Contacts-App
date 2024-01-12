@@ -43,10 +43,9 @@ class MainActivity : AppCompatActivity() {
         val contactList = arrayListOf<Contact>()
 
         val projection = arrayOf(
+            ContactsContract.Contacts._ID,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
             ContactsContract.Contacts.HAS_PHONE_NUMBER,
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.PHOTO_ID,
             ContactsContract.Contacts.PHOTO_URI
         )
         val sortOrder = ContactsContract.Contacts.SORT_KEY_PRIMARY
@@ -67,7 +66,14 @@ class MainActivity : AppCompatActivity() {
                 val avatarUri = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI))
 
                 if (hasPhoneNumber) {
-                    contactList.add(getContactPhones(contactId, contactName, avatarUri))
+                    contactList.add(
+                        Contact(
+                            id = contactId,
+                            name = contactName,
+                            phoneNumbers = getContactPhones(contactId),
+                            avatarUri = if (avatarUri != null) Uri.parse(avatarUri) else null
+                        )
+                    )
                 }
             }
             cursor.close()
@@ -75,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         return contactList
     }
 
-    private fun getContactPhones(contactId: Long, contactName: String, avatarPath: String?) : Contact {
+    private fun getContactPhones(contactId: Long): List<String> {
         val phoneProjection = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
         val phoneSelection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
 
@@ -90,11 +96,13 @@ class MainActivity : AppCompatActivity() {
         val phoneNumbers = mutableListOf<String>()
         if (phoneCursor != null) {
             while (phoneCursor.moveToNext()) {
-                phoneNumbers.add(phoneCursor.getString(phoneCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)))
+                phoneNumbers.add(phoneCursor.getString(
+                    phoneCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                )
             }
             phoneCursor.close()
         }
-        return Contact(contactId, contactName, phoneNumbers, if (avatarPath != null) Uri.parse(avatarPath) else null)
+        return phoneNumbers
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
