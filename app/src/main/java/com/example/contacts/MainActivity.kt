@@ -2,6 +2,7 @@ package com.example.contacts
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,11 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import com.example.contacts.databinding.ActivityMainBinding
+import com.example.contacts.model.Contact
+import com.example.contacts.utils.CONTACTS_LIST
 
 class MainActivity : AppCompatActivity() {
 
     private var binding: ActivityMainBinding? = null
     private var contactList = arrayListOf<Contact>()
+    private val contactsFragment = ContactListFragment()
 
     private val requestContactPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -41,9 +45,11 @@ class MainActivity : AppCompatActivity() {
         val projection = arrayOf(
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
             ContactsContract.Contacts.HAS_PHONE_NUMBER,
-            ContactsContract.Contacts._ID
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.PHOTO_ID,
+            ContactsContract.Contacts.PHOTO_URI
         )
-        val sortOrder = ContactsContract.Contacts.SORT_KEY_PRIMARY + " ASC"
+        val sortOrder = ContactsContract.Contacts.SORT_KEY_PRIMARY
 
         val cursor = contentResolver.query(
             ContactsContract.Contacts.CONTENT_URI,
@@ -58,9 +64,10 @@ class MainActivity : AppCompatActivity() {
                 val contactName = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY))
                 val hasPhoneNumber = cursor.getInt(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)) == 1
                 val contactId = cursor.getLong(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
+                val avatarUri = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI))
 
                 if (hasPhoneNumber) {
-                    contactList.add(getContactPhones(contactId, contactName))
+                    contactList.add(getContactPhones(contactId, contactName, avatarUri))
                 }
             }
             cursor.close()
@@ -68,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         return contactList
     }
 
-    private fun getContactPhones(contactId: Long, contactName: String) : Contact{
+    private fun getContactPhones(contactId: Long, contactName: String, avatarPath: String?) : Contact {
         val phoneProjection = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
         val phoneSelection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
 
@@ -87,7 +94,7 @@ class MainActivity : AppCompatActivity() {
             }
             phoneCursor.close()
         }
-        return Contact(contactId, contactName, phoneNumbers)
+        return Contact(contactId, contactName, phoneNumbers, if (avatarPath != null) Uri.parse(avatarPath) else null)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,7 +109,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showContactsFragment(){
-        val contactsFragment = ContactListFragment()
         contactsFragment.arguments = bundleOf(CONTACTS_LIST to contactList)
         contactsFragment.show(supportFragmentManager, contactsFragment.tag)
     }

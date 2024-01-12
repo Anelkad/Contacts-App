@@ -1,6 +1,5 @@
-package com.example.contacts
+package com.example.contacts.adapters
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -8,7 +7,11 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.contacts.R
 import com.example.contacts.databinding.ItemContactBinding
+import com.example.contacts.model.Contact
+import com.example.contacts.utils.hide
+import com.example.contacts.utils.show
 
 class ContactsAdapter(
     private val contactList: List<Contact>,
@@ -17,7 +20,7 @@ class ContactsAdapter(
 ) : ListAdapter<Contact, ContactsAdapter.HolderMovie>(DiffCallback()), Filterable {
 
     private var filter: FilterContacts? = null
-    private var filterList: List<Contact> = contactList
+    private var originalList: List<Contact> = contactList
     inner class HolderMovie(binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root) {
         val name = binding.tvName
         val image = binding.ivAvatar
@@ -60,7 +63,11 @@ class ContactsAdapter(
 
         holder.apply {
             name.text = contact.name
-            image.setImageURI(Uri.parse("content://com.android.contacts/contacts/${contact.id}/photo"))
+            if (contact.avatarUri != null ) {
+                image.setImageURI(contact.avatarUri )
+            } else {
+                image.setImageResource(R.drawable.baseline_person_24)
+            }
             phoneAdapter.submitList(contact.phoneNumbers)
             if (contact.isSelected){
                 btnDelete.show()
@@ -73,6 +80,6 @@ class ContactsAdapter(
     }
 
     override fun getFilter(): Filter {
-        return filter ?: FilterContacts(filterList, this)
+        return filter ?: FilterContacts(originalList, this)
     }
 }

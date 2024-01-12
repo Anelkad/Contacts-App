@@ -1,6 +1,7 @@
-package com.example.contacts
+package com.example.contacts.adapters
 
 import android.widget.Filter
+import com.example.contacts.model.Contact
 
 class FilterContacts(
     private val filterList: List<Contact>,
@@ -23,6 +24,6 @@ class FilterContacts(
     }
 
     override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-        adapter.submitList(results?.values as? List<Contact> ?: emptyList())
+        adapter.submitList(results?.values as? List<Contact>?: emptyList())
     }
 }

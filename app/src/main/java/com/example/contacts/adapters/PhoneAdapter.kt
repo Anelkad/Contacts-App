@@ -1,4 +1,4 @@
-package com.example.contacts
+package com.example.contacts.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.contacts.databinding.ItemPhoneBinding
 
-class PhoneAdapter() : ListAdapter<String, PhoneAdapter.HolderMovie>(DiffCallback()) {
+class PhoneAdapter : ListAdapter<String, PhoneAdapter.HolderMovie>(DiffCallback()) {
 
     class HolderMovie(binding: ItemPhoneBinding) : RecyclerView.ViewHolder(binding.root) {
         val phone = binding.tvPhone

@@ -1,4 +1,4 @@
-package com.example.contacts
+package com.example.contacts.utils
 
 import android.content.Context
 import android.util.AttributeSet

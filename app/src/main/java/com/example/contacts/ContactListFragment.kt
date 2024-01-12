@@ -6,7 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.example.contacts.adapters.ContactsAdapter
 import com.example.contacts.databinding.ContactListFragmentBinding
+import com.example.contacts.model.Contact
+import com.example.contacts.utils.CONTACTS_LIST
+import com.example.contacts.utils.SearchListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -46,6 +50,7 @@ class ContactListFragment : BottomSheetDialogFragment() {
             onAddListener = ::addContact,
             onDeleteListener = ::deleteContact
         )
+
         binding?.apply {
             rvContacts.adapter = contactsAdapter
             rvContacts.itemAnimator = null
