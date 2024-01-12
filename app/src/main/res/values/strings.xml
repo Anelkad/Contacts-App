@@ -3,4 +3,8 @@
     <string name="add_controller">Добавить контроллера</string>
     <string name="add">Добавить</string>
     <string name="delete">Удалить</string>
+    <string name="close">Закрыть</string>
+    <string name="hint">Номер телефона или имя</string>
+    <string name="search">Поиск</string>
+    <string name="avatar">Фото контакта</string>
 </resources>
